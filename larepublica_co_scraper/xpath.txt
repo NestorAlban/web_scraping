@@ -1,0 +1,5 @@
+Links = //h2[last()]/a/@href
+Titulo = //div[@class="col-8 order-2 d-flex flex-column"]/div[@class="mb-auto"]/h2[last()]/span/text()
+Resumen = //div[@class="lead"]/p[1]/text()
+Cuerpo = //div[@class="html-content"]/p[not(@class)]/text()
+
