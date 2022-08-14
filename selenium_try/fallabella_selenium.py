@@ -87,6 +87,7 @@ def create_categories_foder(path1, category):
     return path_to_folder
 
 def parse_prices_by_category(link, today):
+    #todavia
     try:
         response = requests.get(link)
         if response.status_code == 200:
@@ -147,8 +148,9 @@ def parse_home():
                 element = name.get_attribute("innerText")
                 category_fol = create_categories_foder(folder_1, element)
                 # print(SPACES+element, category_fol)
-                name.click()
+                # name.click()
                 # print(category_fol)
+                ##lista vacia
                 sub_category_names = driver.find_elements(
                     By.XPATH,
                     PATH2
