@@ -55,6 +55,7 @@ def parse_home():
             notices_links2 = parsed.xpath(XPATH_LINK_TO_ARTICLE2)
             print(notices_links)
             today = datetime.date.today().strftime('%d-%m-%Y')
+            
             if not os.path.isdir(today):
                 os.mkdir(today)
                 print("=========nkdir done============")
