@@ -32,15 +32,17 @@ COME_BACK_BUTTON='//*[@id="ripley-sticky-header"]/div/div/div/nav/div/div[2]/div
 NOTIF_BUTTON_NO = '//*[@id="onesignal-slidedown-cancel-button"]'
 PRODUCT_CONTAINER = 'section[@class="catalog-grid"]/div/div/div/a/div[2]/div'
 PRODUCT_IMAGE = 'section[@class="catalog-grid"]/div/div/div/a/div[2]/div[]'
-PRODUCT_INFO = '//*[@id="catalog-page"]/div/div[2]/div[3]/section/div/div/div[{}]/a/div[2]/div{}'
-PRODUCT_NAME = '[@class="catalog-product-name-container"]/div[1]/div/span'
+PRODUCT_INFO = '//*[@id="catalog-page"]/div//section/div[@class="row"]/div[@class="catalog-container"]/div[{}]//div{}'
+PRODUCT_NAME = '[@class="catalog-product-name-container"]//span'
 PRODUCT_DETAILS = '[@class="catalog-product-details__name"]'
 PRODUCT_RATING = '[@class="product-rating product-rating-small"]/span[1]/span[1]'
 PRODUCT_PRICES = '[@class="catalog-product-details__prices"]/div/ul/li'
 PRODUCT_DISCOUNT = '[@class="catalog-product-details__discount-tag"]'
-# //*[@id="catalog-page"]/div/div[2]/div[3]/section[@class="catalog-grid"]/div/div/div/a/div[2]/div
+# '//*[@id="catalog-page"]/div/div[2]/div[3]/section/div/div/div[{}]/a/div[2]/div{}'
 #//*[@id="catalog-page"]/div/div[2]/div[3]/section
-#//*[@id="catalog-page"]/div/div[2]/div[3]/section/div/div/div[1]
+# //*[@id="catalog-page"]/div/div[2]/section/div/div/div[1]
+#'[@class="catalog-product-name-container"]/div[1]/div/span'
+#//*[@id="catalog-page"]/div/div[2]/div[3]/section/div/div/div[1]/div
 TITLE1='Title 1'
 TITLE2='Title 2'
 TITLE3='Title 3'
@@ -48,6 +50,8 @@ BODY1 = 'Body 1'
 BODY2 = 'Body 2'
 BODY3 = 'Body 3'
 driver =webdriver.Chrome(PATH_COMPUTER)
+
+
 
 def check_file(file_txt_path, title, body):
     try:
@@ -64,6 +68,54 @@ def check_file(file_txt_path, title, body):
                 f.write(title)
                 f.write('\n\n')
                 f.write(body)
+                f.write('\n\n')
+                f.write(f'This file was created the {datetime_date}, at {datetime_time}')
+            response_1 = 'created'
+    except ValueError as ve:
+        print(ve)
+    return print(f'File was {response_1}')
+
+def create_product_info(file_path, pr_name, pr_brand, pr_rating, pr_price):
+    try:
+        response_1 = None
+        title = pr_name.replace(
+            '¿', ''
+        ).replace(
+            '\"', ''
+        ).replace(
+            '“', ''
+        ).replace(
+            '?', ''
+        ).replace(
+            '/', '-'
+        ).replace(
+            '!', ''
+        )
+        datetime_date = datetime.date.today().strftime('%d-%m-%Y')
+        datetime_time = ds.now().strftime('%H:%M:%S')
+        txt_path = f'{file_path}/{title}.txt'
+        if os.path.isfile(txt_path):
+            with open(txt_path) as f:
+                lines = f.readlines()
+                # print(lines)
+            response_1 = 'read'
+        else:
+            with open(txt_path, 'w', encoding = 'utf-8') as f:
+                f.write('Product name:')
+                f.write('\n')
+                f.write(pr_name)
+                f.write('\n\n')
+                f.write('Product brand:')
+                f.write('\n')
+                f.write(pr_brand)
+                f.write('\n\n')
+                f.write('Product rating:')
+                f.write('\n')
+                f.write(pr_rating)
+                f.write('\n\n')
+                f.write('Product price:')
+                f.write('\n')
+                f.write(pr_price)
                 f.write('\n\n')
                 f.write(f'This file was created the {datetime_date}, at {datetime_time}')
             response_1 = 'created'
@@ -143,7 +195,7 @@ def close_switch_tab(tab_to: int):
     #     pass
     time.sleep(1)
 
-def get_product_info():
+def get_product_info(path):
     time.sleep(2)
     # product_container = wait_somethin_xpath(PRODUCT_CONTAINER, 2, 0)
     i = 1
@@ -153,7 +205,7 @@ def get_product_info():
     price = 'None'
     discount = 'None'
     # print(len(product_container))
-    while i <= 5:
+    while i <= 4: #to change how many products is going to read in the page
         wait_somethin_xpath(PRODUCT_INFO.format(i, PRODUCT_NAME), 1, 0)
         each_name = driver.find_element(
             By.XPATH,
@@ -184,9 +236,10 @@ def get_product_info():
         #         PRODUCT_INFO.format(i, PRODUCT_DISCOUNT)
         #     )
         #     discount = each_discount.text
-        time.sleep(1)
+        # time.sleep(1)
         print(f'object {i}','\n\n')
         print(name, detail, rating, price)
+        create_product_info(path, detail, name, rating, price)
         i+=1
     time.sleep(1)
         
@@ -234,7 +287,7 @@ def parse_home():
                 f_products_folder, 
                 today,   
             )
-            while i <= len(categories_located):
+            while i <= 2:#len(categories_located): #to change how many categories ar going to be read
                 # print(i)
                 text = PATH_EACH_CATEGORY.format(i)
                 wait_somethin_xpath(text, 1, 1)
@@ -252,7 +305,7 @@ def parse_home():
                 time.sleep(1)
                 sub_cate_loc = wait_somethin_xpath(PATH_SUBCATEGORIES, 2, 1)
                 i_1 = 1
-                while i_1 <= len(sub_cate_loc):
+                while i_1 <= 3:#len(sub_cate_loc): #to change how many sub categories are going to be read
                     time.sleep(2)
                     print(i_1)
                     path_sub_categ = PATH_EACH_SUB_CATEGORY.format(i_1)
@@ -264,12 +317,12 @@ def parse_home():
                     element_2 = each_subcategories.get_attribute("innerText")
                     # print(element_2)
                     sub_category_fol = create_categories_foder(category_fol, element_2)
-                    # print(sub_category_fol)
+                    print(sub_category_fol)
                     link_new_tab = each_subcategories.get_attribute('href')
                     # print(link_new_tab)
                     open_new_tab(link_new_tab, 1)
 
-                    get_product_info()
+                    get_product_info(sub_category_fol)
                     # wait_somethin_xpath(PRODUCT_INFO.format(i, PRODUCT_DISCOUNT), 1, 0)
                     # time.sleep(5)
                     
